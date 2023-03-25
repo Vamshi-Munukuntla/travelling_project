@@ -9,7 +9,7 @@ import numpy as np
 from six.moves import urllib
 import urllib.request
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedShuffleSplit
 
 
 class DataIngestion:
@@ -78,14 +78,14 @@ class DataIngestion:
             start_train_set = None
             start_test_set = None
 
-            # split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
-            #
-            # for train_index, test_index in split.split(travel_data_frame,
-            #                                            travel_data_frame["OwnCar"]):
-            #     start_train_set = travel_data_frame.loc[train_index].drop(["CustomerID"], axis=1)
-            #     start_test_set = travel_data_frame.loc[test_index].drop(["CustomerID"], axis=1)
+            split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
 
-            start_train_set, start_test_set = train_test_split(travel_data_frame, test_size=0.2, random_state=42)
+            for train_index, test_index in split.split(travel_data_frame,
+                                                       travel_data_frame["ProdTaken"]):
+                start_train_set = travel_data_frame.loc[train_index].drop(["CustomerID"], axis=1)
+                start_test_set = travel_data_frame.loc[test_index].drop(["CustomerID"], axis=1)
+
+            # start_train_set, start_test_set = train_test_split(travel_data_frame, test_size=0.2, random_state=42)
 
             train_file_path = os.path.join(self.data_ingestion_config.ingested_train_dir,
                                            file_name)
